@@ -67,13 +67,16 @@ This is what makes your check-ins follow you to your phone.
    or write your own rows.
 3. Go to **Project Settings → API** and copy the **Project URL** and the
    **anon public** key.
-4. Back in Vercel: your project → **Settings → Environment Variables**,
+4. In Supabase Dashboard → **Authentication → URL Configuration**, set:
+   - **Site URL**: `http://localhost:5173/` (or your production Vercel URL)
+   - **Redirect URLs**: Add `http://localhost:5173/` and your production URL (e.g. `https://lockin-yourname.vercel.app/`).
+5. Back in Vercel: your project → **Settings → Environment Variables**,
    add:
    - `VITE_SUPABASE_URL` = the Project URL
    - `VITE_SUPABASE_ANON_KEY` = the anon public key
-5. Redeploy (Vercel → **Deployments** → **⋯** → **Redeploy**, or just
+6. Redeploy (Vercel → **Deployments** → **⋯** → **Redeploy**, or just
    push a new commit).
-6. Open the app, go to **Settings → Sync across devices**, and sign in
+7. Open the app, go to **Settings → Sync across devices**, and sign in
    with your email — you'll get a magic link, no password needed. Sign
    in with the same email on your phone and both devices stay in sync
    automatically (live, via Supabase Realtime).
