@@ -37,7 +37,7 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-void flex flex-col">
-      <header className="sticky top-0 z-40 bg-void/95 backdrop-blur border-b border-hairline">
+      <header className="sticky top-0 z-40 bg-void border-b border-hairline">
         <div className="max-w-[1400px] mx-auto px-6 h-14 flex items-center gap-8">
           <div className="flex items-center gap-2 shrink-0">
             <LockinMark />
@@ -103,7 +103,7 @@ export function AppLayout() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'px-2.5 h-7 flex items-center rounded-[3px] text-[12px] font-medium whitespace-nowrap transition-colors',
+                  'px-2.5 min-h-[44px] py-2 flex items-center rounded-[3px] text-[12px] font-medium whitespace-nowrap transition-colors',
                   isActive ? 'text-primary bg-elevated' : 'text-secondary'
                 )
               }
@@ -114,7 +114,7 @@ export function AppLayout() {
         </nav>
       </header>
 
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6">
+      <main id="main-content" className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-6">
         <Outlet />
       </main>
     </div>
@@ -133,8 +133,16 @@ function LockinMark() {
 }
 
 function SyncGlyph({ status }: { status: string }) {
-  if (status === 'synced') return <Cloud size={14} className="text-cyan" aria-label="Synced" />
-  if (status === 'syncing') return <RefreshCw size={14} className="text-cyan animate-spin" aria-label="Syncing" />
-  if (status === 'error') return <AlertCircle size={14} className="text-red" aria-label="Sync error" />
-  return <CloudOff size={14} className="text-tertiary" aria-label="Not signed in" />
+  const map: Record<string, { icon: React.ReactNode; label: string }> = {
+    synced: { icon: <Cloud size={14} className="text-cyan" />, label: 'Synced' },
+    syncing: { icon: <RefreshCw size={14} className="text-cyan animate-spin" />, label: 'Syncing' },
+    error: { icon: <AlertCircle size={14} className="text-red" />, label: 'Sync error' },
+    'signed-out': { icon: <CloudOff size={14} className="text-tertiary" />, label: 'Not signed in' },
+  }
+  const item = map[status] || map['signed-out']
+  return (
+    <span role="status" aria-label={item.label} title={item.label} className="inline-flex items-center">
+      {item.icon}
+    </span>
+  )
 }

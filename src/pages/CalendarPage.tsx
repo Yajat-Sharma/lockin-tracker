@@ -52,6 +52,14 @@ export function CalendarPage() {
       .map((h) => ({ habit: h, completed: isCompletedOn(entryMap, h.id, selectedDay) }))
   }, [selectedDay, habits, entryMap])
 
+  const daysStatsMap = useMemo(() => {
+    const map = new Map<string, { completed: number; scheduled: number; rate: number }>()
+    for (const day of days) {
+      map.set(day, calculateDailyCompletion(habits, entryMap, day))
+    }
+    return map
+  }, [days, habits, entryMap])
+
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -88,13 +96,15 @@ export function CalendarPage() {
                 <div key={`b-${i}`} />
               ))}
               {days.map((day) => {
-                const stats = calculateDailyCompletion(habits, entryMap, day)
+                const stats = daysStatsMap.get(day) ?? { completed: 0, scheduled: 0, rate: 0 }
                 const future = isFutureISO(day)
                 return (
                   <button
                     key={day}
+                    type="button"
                     onClick={() => setSelectedDay(day)}
                     disabled={future && stats.scheduled === 0}
+                    aria-label={`${formatDisplay(day, 'MMM d, yyyy')}, ${stats.completed} of ${stats.scheduled} completed (${stats.rate}%)`}
                     className={cn(
                       'aspect-square rounded-[4px] flex flex-col items-center justify-center gap-0.5 border transition-colors',
                       selectedDay === day ? 'border-cyan' : 'border-hairline hover:border-hairline-strong',

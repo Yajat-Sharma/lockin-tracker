@@ -116,13 +116,19 @@ export const useLockinStore = create<LockinState>((set, get) => ({
 
   init: async () => {
     const settings = StorageAdapter.getSettings()
-    let habits = await StorageAdapter.getHabits()
-    let entries = await StorageAdapter.getEntries()
+    const [storedHabits, storedEntries] = await Promise.all([
+      StorageAdapter.getHabits(),
+      StorageAdapter.getEntries(),
+    ])
+    let habits = storedHabits
+    let entries = storedEntries
 
     if (habits.length === 0) {
       const demo = generateDemoData(120)
-      await StorageAdapter.bulkPutHabits(demo.habits)
-      await StorageAdapter.bulkPutEntries(demo.entries)
+      await Promise.all([
+        StorageAdapter.bulkPutHabits(demo.habits),
+        StorageAdapter.bulkPutEntries(demo.entries),
+      ])
       habits = demo.habits
       entries = demo.entries
     }
@@ -130,34 +136,40 @@ export const useLockinStore = create<LockinState>((set, get) => ({
     set({ habits, entries, settings, loaded: true })
 
     if (isSyncConfigured) {
-      const session = await getSession()
-      set({ session, syncStatus: session ? 'syncing' : 'signed-out' })
-      if (session) {
-        await fullResync(get, set)
-        realtimeUnsubscribe = subscribeToChanges(
-          session.user.id,
-          () => refreshHabitsFromRemote(set),
-          () => refreshEntriesFromRemote(set)
-        )
-      }
-      onAuthStateChange(async (newSession) => {
-        const hadSession = !!get().session
-        set({ session: newSession })
-        if (newSession && !hadSession) {
-          set({ syncStatus: 'syncing' })
-          await fullResync(get, set)
-          realtimeUnsubscribe?.()
-          realtimeUnsubscribe = subscribeToChanges(
-            newSession.user.id,
-            () => refreshHabitsFromRemote(set),
-            () => refreshEntriesFromRemote(set)
-          )
-        } else if (!newSession && hadSession) {
-          realtimeUnsubscribe?.()
-          realtimeUnsubscribe = null
-          set({ syncStatus: 'signed-out' })
+      setTimeout(async () => {
+        try {
+          const session = await getSession()
+          set({ session, syncStatus: session ? 'syncing' : 'signed-out' })
+          if (session) {
+            await fullResync(get, set)
+            realtimeUnsubscribe = subscribeToChanges(
+              session.user.id,
+              () => refreshHabitsFromRemote(set),
+              () => refreshEntriesFromRemote(set)
+            )
+          }
+          onAuthStateChange(async (newSession) => {
+            const hadSession = !!get().session
+            set({ session: newSession })
+            if (newSession && !hadSession) {
+              set({ syncStatus: 'syncing' })
+              await fullResync(get, set)
+              realtimeUnsubscribe?.()
+              realtimeUnsubscribe = subscribeToChanges(
+                newSession.user.id,
+                () => refreshHabitsFromRemote(set),
+                () => refreshEntriesFromRemote(set)
+              )
+            } else if (!newSession && hadSession) {
+              realtimeUnsubscribe?.()
+              realtimeUnsubscribe = null
+              set({ syncStatus: 'signed-out' })
+            }
+          })
+        } catch {
+          set({ syncStatus: 'error' })
         }
-      })
+      }, 0)
     }
   },
 

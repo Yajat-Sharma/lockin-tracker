@@ -49,9 +49,10 @@ export function Modal({ open, onClose, title, children, width = 480 }: ModalProp
             <div className="flex items-center justify-between px-5 py-4 border-b border-hairline sticky top-0 bg-surface">
               <h2 className="text-[14px] font-semibold text-primary">{title}</h2>
               <button
+                type="button"
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="text-tertiary hover:text-primary transition-colors p-1 rounded-[3px] hover:bg-elevated"
+                className="text-tertiary hover:text-primary transition-colors p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-[3px] hover:bg-elevated"
               >
                 <X size={16} />
               </button>
