@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Zap } from 'lucide-react'
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -65,6 +64,7 @@ export function TodayChecklist() {
             return (
               <button
                 key={h.id}
+                type="button"
                 role="option"
                 aria-selected={i === selected}
                 onClick={() => {
@@ -79,22 +79,15 @@ export function TodayChecklist() {
               >
                 <span
                   className={cn(
-                    'flex items-center justify-center w-5 h-5 rounded-[3px] shrink-0 transition-colors',
-                    completed ? 'bg-green' : 'border border-hairline-strong'
+                    'flex items-center justify-center w-5 h-5 rounded-[3px] shrink-0 transition-all duration-150',
+                    completed ? 'bg-green scale-100' : 'border border-hairline-strong'
                   )}
                 >
-                  <AnimatePresence>
-                    {completed && (
-                      <motion.span
-                        initial={{ scale: 0.4, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.4, opacity: 0 }}
-                        className="text-void"
-                      >
-                        <Check size={12} strokeWidth={3} />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
+                  {completed && (
+                    <span className="text-void flex items-center justify-center animate-in zoom-in-50 duration-150">
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+                  )}
                 </span>
                 <span className="text-[13px]">{h.icon}</span>
                 <span className={cn('text-[13px] flex-1 truncate', completed ? 'text-tertiary line-through' : 'text-primary')}>

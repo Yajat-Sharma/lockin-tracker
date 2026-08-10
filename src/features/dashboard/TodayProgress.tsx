@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import { ProgressRing } from '@/components/ui/ProgressRing'
 import { useActiveHabits, useEntryMap } from '@/hooks/useDerivedData'
@@ -34,14 +33,12 @@ export function TodayProgress() {
               Today · {formatDisplay(today, 'MMM d')}
             </p>
             <div className="flex items-baseline gap-1.5">
-              <motion.span
+              <span
                 key={stats.completed}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="font-mono-tabular text-[32px] sm:text-[40px] font-semibold text-primary leading-none"
+                className="font-mono-tabular text-[32px] sm:text-[40px] font-semibold text-primary leading-none transition-transform duration-200"
               >
                 {stats.completed}
-              </motion.span>
+              </span>
               <span className="text-[18px] text-tertiary leading-none">/ {stats.scheduled}</span>
               <span className="text-[13px] text-secondary ml-1">habits completed</span>
             </div>
@@ -50,11 +47,9 @@ export function TodayProgress() {
 
         <div className="flex-1 hidden lg:block">
           <div className="h-1.5 w-full bg-elevated rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-cyan rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${stats.rate}%` }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            <div
+              className="h-full bg-cyan rounded-full transition-all duration-700 ease-out"
+              style={{ width: `${stats.rate}%` }}
             />
           </div>
         </div>
