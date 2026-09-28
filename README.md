@@ -13,7 +13,7 @@ npm install
 npm run dev       # start the dev server
 npm run build     # type-check + production build → dist/
 npm run test      # run the calculation-engine unit tests
-npm run lint      # oxlin
+npm run lint      # oxlint
 ```
 
 On first launch LOCKIN seeds itself with ~120 days of realistic demo data
